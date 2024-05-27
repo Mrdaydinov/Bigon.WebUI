@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿    <!DOCTYPE html>
 <html class="no-js" lang="en-US">
 <!-- Mirrored from htmldemo.net/bigon/bigon/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 12 Sep 2022 07:30:53 GMT -->
 <head>
@@ -37,6 +37,8 @@
     <link rel="stylesheet" href="~/assets/css/style.css" />
     <!-- responsive css -->
     <link rel="stylesheet" href="~/assets/css/responsive.css" />
+
+    <link rel="stylesheet" href="~/libs/toastr.js/toastr.css" />
 
     <!-- modernizr js -->
     <script src="~/assets/js/vendor/modernizr-2.8.3.min.js"></script>
@@ -155,53 +157,8 @@
                             </div>
                         </div>
 
-                        <div class="col-md-9 d-none d-md-block">
-                            <!-- Header Middle Menu Start -->
-                            <div class="middle-menu">
-                                <nav>
-                                    <ul class="middle-menu-list">
-                                        <li><a href="index.html">home</a></li>
-                                        <li><a href="about.html">about us</a></li>
-                                        <li><a href="contact.html">contact us</a></li>
-                                        <li>
-                                            <a href="blog.html">
-                                                blog<i class="fa fa-angle-down"></i>
-                                            </a>
-                                            <!-- Home Version Dropdown Start -->
-                                            <ul class="ht-dropdown dropdown-style-two">
-                                                <li><a href="blog-details.html">blog details</a></li>
-                                            </ul>
-                                            <!-- Home Version Dropdown End -->
-                                        </li>
-                                        <li>
-                                            <a href="#">pages<i class="fa fa-angle-down"></i></a>
-                                            <!-- Home Version Dropdown Start -->
-                                            <ul class="ht-dropdown dropdown-style-two">
-                                                <li><a href="login.html">login</a></li>
-                                                <li><a href="register.html">register</a></li>
-                                                <li><a href="404.html">404</a></li>
-                                            </ul>
-                                            <!-- Home Version Dropdown End -->
-                                        </li>
-                                        <li>
-                                            <a href="shop.html">
-                                                shop<i class="fa fa-angle-down"></i>
-                                            </a>
-                                            <!-- Home Version Dropdown Start -->
-                                            <ul class="ht-dropdown dropdown-style-two">
-                                                <li><a href="product.html">product details</a></li>
-                                                <li><a href="compare.html">compare</a></li>
-                                                <li><a href="cart.html">cart</a></li>
-                                                <li><a href="checkout.html">checkout</a></li>
-                                                <li><a href="wishlist.html">wishlist</a></li>
-                                            </ul>
-                                            <!-- Home Version Dropdown End -->
-                                        </li>
-                                    </ul>
-                                </nav>
-                            </div>
-                            <!-- Header Middle Menu End -->
-                        </div>
+                       <partial name="_Navbar"/>
+
                         <!-- Cartt Box Start -->
                         <div class="col-7 col-md-12 full-col fl-r d-md-none">
                             <div class="cart-box">
@@ -1037,6 +994,12 @@
     <script src="~/assets/js/plugins.js"></script>
     <!-- main js -->
     <script src="~/assets/js/main.js"></script>
+
+    <script src="~/libs/toastr.js/toastr.min.js"></script>
+    <script src="~/libs/toastr.js/toastradditional.js"></script>
+
+
+   @RenderSection("custom_js", false)
 </body>
 
 <!-- Mirrored from htmldemo.net/bigon/bigon/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 12 Sep 2022 07:31:31 GMT -->
