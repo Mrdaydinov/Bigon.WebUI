@@ -10,7 +10,7 @@ namespace Bigon.WebUI.Models
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public DbSet<Category> Colors { get; set; }
+        public DbSet<Color> Colors { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Category> Categories { get; set; }

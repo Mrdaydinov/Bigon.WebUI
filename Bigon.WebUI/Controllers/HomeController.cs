@@ -1,17 +1,23 @@
-﻿using Bigon.WebUI.Models;
+﻿using Bigon.WebUI.Helpers.Services;
+using Bigon.WebUI.Models;
 using Bigon.WebUI.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Bigon.WebUI.Controllers
 {
     public class HomeController : Controller
     {
         private readonly DataContext _context;
+        private readonly IEmailService _emailService;
 
-        public HomeController(DataContext context)
+        public HomeController(DataContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
         public IActionResult Index()
         {
@@ -19,7 +25,7 @@ namespace Bigon.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Subscribe(string email)
+        public async Task<IActionResult> Subscribe(string email)
         {
             if (email == null)
             {
@@ -49,6 +55,15 @@ namespace Bigon.WebUI.Controllers
                 });
             }
 
+            if (dbEmail != null && !dbEmail.IsApproved)
+            {
+                return Json(new
+                {
+                    error = true,
+                    message = "Email already exists"
+                });
+            }
+
             var newSubscriber = new Subscriber
             {
                 EmailAddress = email,
@@ -56,13 +71,61 @@ namespace Bigon.WebUI.Controllers
             };
             
             _context.Subscribers.Add(newSubscriber);
-            _context.SaveChanges(); 
-            
+            _context.SaveChanges();
+
+            string token = $"#demo-{newSubscriber.EmailAddress}-{newSubscriber.CreatedAt:yyyy-MM-dd HH:mm:ss.fff}-bigon";
+            token = HttpUtility.UrlEncode(token);
+
+            string url = $"{Request.Scheme}://{Request.Host}/subscribe-approve?token={token}";
+            string body = $"Please click to link accept subscription <a href=\"{url}\">Click!</a>";
+
+            await _emailService.SendMailAsync(email, "Subscription", body);
+
             return Ok(new
             {
                 success = true,
-                message = $"Register is success"
+                message = $"Register is success, please verify your email"
             });
+        }
+
+        [Route("/subscribe-approve")]
+        public async Task<IActionResult> SubscribeApprove(string token)
+        {
+            string pattern = @"#demo-(?<email>[^-]*)-(?<date>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3})-bigon";
+
+            Match match = Regex.Match(token, pattern);
+
+            if (!match.Success)
+            {
+                return Content("token is broken!");
+            }
+
+            string email = match.Groups["email"].Value;
+            string dateStr = match.Groups["date"].Value;
+
+            if (!DateTime.TryParseExact(dateStr, "yyyy-MM-dd HH:mm:ss.fff", null, DateTimeStyles.None, out DateTime date))
+            {
+                return Content("token is broken!");
+            }
+
+            var subscriber = await _context.Subscribers
+                .FirstOrDefaultAsync(m => m.EmailAddress.Equals(email) && m.CreatedAt == date);
+
+            if (subscriber == null)
+            {
+                return Content("token is broken!");
+            }
+
+            if (!subscriber.IsApproved)
+            {
+                subscriber.IsApproved = true;
+                subscriber.ApprovedAt = DateTime.Now;
+            }
+            await _context.SaveChangesAsync();
+
+
+            return Content($"Success: Email: {email}\n" +
+                $"Date: {date}");
         }
     }
 }
